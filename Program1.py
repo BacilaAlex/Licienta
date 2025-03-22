@@ -1,18 +1,11 @@
 import torch.nn as nn
-
 from torch.utils.data import DataLoader
-
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from LSTM import LSTM
 
 
 
-
-
 maxWordsPhrase = x.apply(lambda x: len(x.split(' '))).max()
-
-xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2, random_state=42)
 
 
 # Convert labels to tensors

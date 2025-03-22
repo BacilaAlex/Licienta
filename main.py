@@ -1,7 +1,7 @@
 import pandas as pd
 from TextCleaner import TextCleaner
 from TextProcessor import TextProcessor
-
+from sklearn.model_selection import train_test_split
 
 def GetArticleData():
     df1 = pd.read_csv(r"dreaddit/dreaddit-train.csv")
@@ -16,24 +16,15 @@ def main():
 
     df = GetArticleData()
     
-    x = textCleaner.GetCleanedData(df["text"])
+    x = df["text"].apply(lambda x: textCleaner.GetCleanedData(x))
     y = df["label"]
 
-    text_data = [
-    "Hello world!",
-    "This is a test.",
-    "Cava is great.",
-    "I love coding.",
-    "Natural language processing is fun.",
-    "Check out this link: https://example.com",
-    "Text preprocessing is important.",
-    "Python is awesome.",
-    "How do you do?",
-    "Let's test this out!"
-    ]
+    print(x)
+    print(y)
 
-    textProcessor.GeneratePaddings(text_data)
+    xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2, random_state=42)
 
+    textProcessor.GeneratePaddings(x)
     pass
 
 if __name__ == "__main__":
