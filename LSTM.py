@@ -1,6 +1,5 @@
 
 import torch.nn as nn
-from sklearn.metrics import classification_report
 
 class LSTM(nn.Module):
     def __init__(self, num_emb, output_size, num_layers=1, hidden_size=128):

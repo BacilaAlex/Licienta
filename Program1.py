@@ -4,16 +4,14 @@ import pandas as pd
 import string
 import torch
 import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader
-from torch.nn.utils.rnn import pad_sequence
 
-from torchtext.data.utils import get_tokenizer
+from torch.utils.data import DataLoader
+from torch.nn.utils.rnn import pad_sequence
+from torchtext.data import get_tokenizer
 from torchtext.vocab import build_vocab_from_iterator
-import torch.nn.functional as F
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from nltk.corpus import stopwords
-
 from LSTM import LSTM
 
 df1 = pd.read_csv(r"dreaddit/dreaddit-train.csv")
@@ -56,7 +54,6 @@ maxWordsPhrase = x.apply(lambda x: len(x.split(' '))).max()
 
 xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2, random_state=42)
 
-
 tokenizer = get_tokenizer('basic_english')
 
 def yield_tokens(data_iter):
@@ -66,8 +63,6 @@ def yield_tokens(data_iter):
 vocab = build_vocab_from_iterator(yield_tokens(xTest), min_freq = 3,specials=["<pad>","<unk>"])
 
 vocab.set_default_index(vocab["<unk>"])
-
-vocab.get_itos()
 
 def process_text(text, vocab, tokenizer):
     tokens = tokenizer(text)
@@ -155,3 +150,5 @@ with torch.no_grad():
 
 print("\nTest Results:")
 print(classification_report(actuals, predictions))
+print("Accuracy:", accuracy_score(actuals, predictions))
+print("Training completed.")
