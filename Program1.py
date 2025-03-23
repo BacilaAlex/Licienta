@@ -1,23 +1,8 @@
 import torch.nn as nn
-from torch.utils.data import DataLoader
 from sklearn.metrics import accuracy_score, classification_report
 from LSTM import LSTM
 
-
-
 maxWordsPhrase = x.apply(lambda x: len(x.split(' '))).max()
-
-
-# Convert labels to tensors
-yTrain_tensor = torch.tensor(yTrain.values, dtype=torch.float32)
-yTest_tensor = torch.tensor(yTest.values, dtype=torch.float32)
-
-# Create data loader
-batch_size = 32
-train_data = list(zip(xTrain_padded, yTrain_tensor))
-test_data = list(zip(xTest_padded, yTest_tensor))
-train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
-test_loader = DataLoader(test_data, batch_size=batch_size)
 
 # Initialize model
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')

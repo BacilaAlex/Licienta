@@ -2,18 +2,17 @@
 import torch.nn as nn
 
 class LSTM(nn.Module):
-    def __init__(self, num_emb, output_size, num_layers=1, hidden_size=128):
+    def __init__(self, vocabularySize, outputSize, layers, hiddenSize):
         super(LSTM, self).__init__()
         
         # Create an embedding layer to convert token indices to dense vectors
-        self.embedding = nn.Embedding(num_emb, hidden_size)
+        self.embedding = nn.Embedding(vocabularySize, hiddenSize)
         
         # Define the LSTM layer
-        self.lstm = nn.LSTM(input_size=hidden_size, hidden_size=hidden_size, 
-                            num_layers=num_layers, batch_first=True, dropout=0.5)
+        self.lstm = nn.LSTM(input_size=hiddenSize, hidden_size=hiddenSize, num_layers=layers, batch_first=True, dropout=0.5)
         
         # Define the output fully connected layer
-        self.fc_out = nn.Linear(hidden_size, output_size)
+        self.fc_out = nn.Linear(hiddenSize, outputSize)
 
     def forward(self, input_seq, hidden_in, mem_in):
         # Convert token indices to dense vectors
