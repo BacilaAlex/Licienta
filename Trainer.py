@@ -17,7 +17,7 @@ class Trainer:
         for epoch in range(epochs):
             self.model.train()
             totalLoss = 0
-            for batchIndex, (data, target) in enumerate(self.trainData):
+            for data, target in self.trainData:
                 data, target = data.to(self.device), target.to(self.device)
                 
                 hidden = torch.zeros(self.layers, data.size(0), self.hiddenSize).to(self.device)
@@ -35,9 +35,6 @@ class Trainer:
                 self.optimizer.step()
                 
                 totalLoss += loss.item()
-                
-                if batchIndex % 100 == 0:
-                    print(f'Epoch: {epoch+1}/{epochs}, Batch: {batchIndex}, Loss: {loss.item():.4f}')
             
             avg_loss = totalLoss / len(self.trainData)
             print(f'Epoch: {epoch+1}/{epochs}, Average Loss: {avg_loss:.4f}')
@@ -48,14 +45,17 @@ class Trainer:
         with torch.no_grad():
             for data, target in self.testData:
                 data, target = data.to(self.device), target.to(self.device)
+
                 hidden = torch.zeros(self.layers, data.size(0), self.hiddenSize).to(self.device)
                 cell = torch.zeros(self.layers, data.size(0), self.hiddenSize).to(self.device)
                 
                 output, _, _ = self.model(data, hidden, cell)
                 output = output[:, -1, :]
                 output = output.squeeze()
-                pred = (torch.sigmoid(output) > 0.5).float() 
-                predictions.extend(pred.cpu().numpy().tolist())
+
+                prediction = (torch.sigmoid(output) > 0.5).float()
+
+                predictions.extend(prediction.cpu().numpy().tolist())
                 actuals.extend(target.cpu().numpy().tolist())
         
         print("\nTest Results:")

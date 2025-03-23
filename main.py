@@ -24,10 +24,12 @@ def main():
     x = df["text"].apply(lambda x: textCleaner.GetCleanedData(x))
     y = df["label"]
 
+    vocabulary = textProcessor.GenerateVocabulary(x)
+
     xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2, random_state=42)
 
-    xTrain  = textProcessor.GeneratePaddings(xTrain)
-    xTest = textProcessor.GeneratePaddings(xTest)
+    xTrain  = textProcessor.GeneratePaddings(xTrain ,vocabulary)
+    xTest = textProcessor.GeneratePaddings(xTest, vocabulary)
 
     yTrain = torch.tensor(yTrain.values, dtype=torch.float)
     yTest = torch.tensor(yTest.values, dtype=torch.float)
@@ -35,16 +37,16 @@ def main():
     batchSize = 32
     trainData = list(zip(xTrain, yTrain))
     testData = list(zip(xTest, yTest))
-    trainData = DataLoader(trainData, batch_size=batchSize, shuffle=True)
-    testData = DataLoader(testData, batch_size=batchSize, shuffle=True)
+    trainData = DataLoader(trainData, batch_size=batchSize)
+    testData = DataLoader(testData, batch_size=batchSize)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     outputSize = 1
-    hiddenSize = 1
-    layers = 1
-    epochs = 10
+    hiddenSize = 128
+    layers = 2
+    epochs = 15
 
-    model = LSTM(len(textProcessor.GenerateVocabulary(x)), outputSize, layers, hiddenSize).to(device)
+    model = LSTM(len(vocabulary), outputSize, layers, hiddenSize).to(device)
     criterion = nn.BCEWithLogitsLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     
