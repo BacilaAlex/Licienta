@@ -14,10 +14,11 @@ def main():
 
     batchSize = 32
     outputSize = 1
-    hiddenSize = 128
-    layers = 3
-    epochs = 15
+    hiddenSize = 16
+    layers = 4
+    epochs = 150
     learningRate = 0.005
+    embeddingSize = 500
     
     df = GetArticleData()
     x = df["text"].apply(lambda x: textCleaner.GetCleanedData(x))
@@ -39,13 +40,13 @@ def main():
     testData = DataLoader(testData, batch_size=batchSize)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = LSTM(len(vocabulary), outputSize, layers, hiddenSize).to(device)
-    criterion = nn.BCEWithLogitsLoss()
+    model = LSTM(len(vocabulary), embeddingSize, hiddenSize, outputSize, layers).to(device)
+    criterion = nn.BCEWithLogitsLoss()  # Changed to BCEWithLogitsLoss
     optimizer = torch.optim.Adam(model.parameters(), lr=learningRate)
 
     trainer = Trainer(device, model, criterion, optimizer, layers, hiddenSize, trainData, testData)
-    trainer.train(epochs)
-    trainer.evaluate()
+    trainer.Train(epochs)
+    trainer.Evaluate()
 
     pass
 

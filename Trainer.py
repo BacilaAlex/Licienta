@@ -12,47 +12,59 @@ class Trainer:
         self.trainData = trainData
         self.testData = testData
 
-    def train(self, epochs):
+    def Train(self, epochs):
         print("Starting training...")
         for epoch in range(epochs):
             self.model.train()
-            totalLoss = 0
+            total_loss = 0.0
+            total_samples = 0
+            
             for data, target in self.trainData:
                 data, target = data.to(self.device), target.to(self.device)
                 
-                hidden = torch.zeros(self.layers, data.size(0), self.hiddenSize).to(self.device)
-                cell = torch.zeros(self.layers, data.size(0), self.hiddenSize).to(self.device)
-                
                 self.optimizer.zero_grad()
 
-                output, hidden, cell = self.model(data, hidden, cell)
-                output = output[:, -1, :] 
-                output = output.squeeze() 
-
+                # Get output and hidden state from model
+                output, _ = self.model(data)
+                output = output.squeeze()  # Ensure output matches target dimensions
+                
                 loss = self.criterion(output, target)
                 loss.backward()
-
                 self.optimizer.step()
                 
-                totalLoss += loss.item()
-            
-            avg_loss = totalLoss / len(self.trainData)
-            print(f'Epoch: {epoch+1}/{epochs}, Average Loss: {avg_loss:.4f}')
+                total_loss += loss.item() * len(data)
+                total_samples += len(data)
 
-    def evaluate(self):
+            # Validation phase
+            self.model.eval()
+            total_val_loss = 0.0
+            total_val_samples = 0
+            
+            with torch.no_grad():
+                for data, target in self.testData:
+                    data, target = data.to(self.device), target.to(self.device)
+                    
+                    output, _ = self.model(data)
+                    output = output.squeeze()  # Ensure output matches target dimensions
+                    
+                    val_loss = self.criterion(output, target)
+                    total_val_loss += val_loss.item() * len(data)
+                    total_val_samples += len(data)
+
+            avg_train_loss = total_loss / total_samples
+            avg_val_loss = total_val_loss / total_val_samples
+            
+            print(f'Epoch: {epoch+1}/{epochs}, Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}')
+
+    def Evaluate(self):
         self.model.eval()
         predictions, actuals = [], []
         with torch.no_grad():
             for data, target in self.testData:
                 data, target = data.to(self.device), target.to(self.device)
-
-                hidden = torch.zeros(self.layers, data.size(0), self.hiddenSize).to(self.device)
-                cell = torch.zeros(self.layers, data.size(0), self.hiddenSize).to(self.device)
                 
-                output, _, _ = self.model(data, hidden, cell)
-                output = output[:, -1, :]
-                output = output.squeeze()
-
+                output, _ = self.model(data)
+                output = output.squeeze()  # Ensure output matches target dimensions
                 prediction = (torch.sigmoid(output) > 0.5).float()
 
                 predictions.extend(prediction.cpu().numpy().tolist())
