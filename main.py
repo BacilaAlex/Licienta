@@ -12,12 +12,12 @@ def main():
     textCleaner = TextCleaner()
     textProcessor = TextProcessor()
 
-    batchSize = 32
+    batchSize = 64
     outputSize = 1
-    hiddenSize = 16
+    hiddenSize = 32
     layers = 4
-    epochs = 150
-    learningRate = 0.005
+    epochs = 250
+    learningRate = 0.009
     embeddingSize = 500
     
     df = GetArticleData()
