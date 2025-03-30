@@ -8,19 +8,18 @@ from LSTM import LSTM
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 
-def GetArticleData():
-    df1 = pd.read_csv(r"dreaddit/dreaddit-train.csv")
-    df3 = pd.read_csv(r"dreaddit/dreaddit-test.csv")
-    df = pd.concat([df1, df3], ignore_index=True)
-    return df
-
-
 def main():
     textCleaner = TextCleaner()
     textProcessor = TextProcessor()
 
-    df = GetArticleData()
+    batchSize = 32
+    outputSize = 1
+    hiddenSize = 128
+    layers = 3
+    epochs = 15
+    learningRate = 0.005
     
+    df = GetArticleData()
     x = df["text"].apply(lambda x: textCleaner.GetCleanedData(x))
     y = df["label"]
 
@@ -34,27 +33,27 @@ def main():
     yTrain = torch.tensor(yTrain.values, dtype=torch.float)
     yTest = torch.tensor(yTest.values, dtype=torch.float)
     
-    batchSize = 32
     trainData = list(zip(xTrain, yTrain))
     testData = list(zip(xTest, yTest))
-    trainData = DataLoader(trainData, batch_size=batchSize)
+    trainData = DataLoader(trainData, batch_size=batchSize, shuffle=True)
     testData = DataLoader(testData, batch_size=batchSize)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    outputSize = 1
-    hiddenSize = 128
-    layers = 2
-    epochs = 15
-
     model = LSTM(len(vocabulary), outputSize, layers, hiddenSize).to(device)
     criterion = nn.BCEWithLogitsLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    
+    optimizer = torch.optim.Adam(model.parameters(), lr=learningRate)
+
     trainer = Trainer(device, model, criterion, optimizer, layers, hiddenSize, trainData, testData)
     trainer.train(epochs)
     trainer.evaluate()
 
     pass
+
+def GetArticleData():
+    df1 = pd.read_csv(r"dreaddit/dreaddit-train.csv")
+    df3 = pd.read_csv(r"dreaddit/dreaddit-test.csv")
+    df = pd.concat([df1, df3], ignore_index=True)
+    return df
 
 if __name__ == "__main__":
     main()
