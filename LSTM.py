@@ -1,31 +1,8 @@
 import torch
 import torch.nn as nn
 
-# class LSTM(nn.Module):
-#     def __init__(self, vocabularySize, outputSize, layers, hiddenSize):
-#         super(LSTM, self).__init__()
-        
-#         # Create an embedding layer to convert token indices to dense vectors
-#         self.embedding = nn.Embedding(vocabularySize, hiddenSize)
-        
-#         # Define the LSTM layer
-#         self.lstm = nn.LSTM(input_size=hiddenSize, hidden_size=hiddenSize, num_layers=layers, batch_first=True)
-        
-#         # Define the output fully connected layer
-#         self.fc_out = nn.Linear(hiddenSize, outputSize)
-
-#     def forward(self, inputSeq, hiddenIn, memIn):
-#         # Convert token indices to dense vectors
-#         inputEmbs = self.embedding(inputSeq)
-
-#         # Pass the embeddings through the LSTM layer
-#         output, (hiddenOut, memOut) = self.lstm(inputEmbs, (hiddenIn, memIn))
-                
-#         # Pass the LSTM output through the fully connected layer to get the final output
-#         return self.fc_out(output), hiddenOut, memOut
-
 class LSTM(nn.Module):
-    def __init__(self, vocab_size, embedding_dim, hidden_dim, num_classes, num_layers=1, dropout=0.5):
+    def __init__(self, vocab_size, embedding_dim, hidden_dim, num_classes, num_layers=1):
         super(LSTM, self).__init__()
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
         self.lstm = nn.LSTM(input_size=embedding_dim, hidden_size=hidden_dim, num_layers=num_layers, batch_first=True)

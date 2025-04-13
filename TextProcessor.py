@@ -5,7 +5,7 @@ from torchtext.vocab import build_vocab_from_iterator
 
 class TextProcessor:
     def __init__(self):
-        self.tokenizer = get_tokenizer('basic_english')
+        self.tokenizer = lambda x: x.split()
 
     def TokenIterator(self, textData):
             for text in textData:
