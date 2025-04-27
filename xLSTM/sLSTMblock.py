@@ -1,14 +1,14 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from BlockDiagonal import BlockDiagonal
-from CausalConv1D import CausalConv1D
+from .BlockDiagonal import BlockDiagonal
+from .CausalConv1D import CausalConv1D
 
 class sLSTMblock(nn.Module):
-    def __init__(self, x_example, depth, dropout=0.2):
+    def __init__(self, batchPaddingInputSize, depth, dropout=0.2):
         super().__init__()
-        self.input_size = x_example.shape[2]
-        conv_channels = x_example.shape[1]
+        self.input_size = batchPaddingInputSize.shape[2]
+        conv_channels = batchPaddingInputSize.shape[1]
         
         self.ln = nn.LayerNorm(self.input_size)
         
@@ -42,7 +42,7 @@ class sLSTMblock(nn.Module):
         
         self.proj = nn.Linear(int(self.input_size*(4/3)), self.input_size)
         
-        self.init_states(x_example)
+        self.init_states(batchPaddingInputSize)
         
     def init_states(self, x):
         self.nt_1 = torch.zeros(1, 1, x.shape[2], device=x.device)

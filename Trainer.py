@@ -2,18 +2,17 @@ import torch
 from sklearn.metrics import accuracy_score, classification_report
 
 class Trainer:
-    def __init__(self,device, model, criterion, optimizer , layers, hiddenSize, trainData, testData):
+    def __init__(self,device, model, criterion, optimizer , trainData, testData, embedding_size):
         self.device = device
         self.model = model.to(self.device)
         self.criterion = criterion
         self.optimizer = optimizer
-        self.layers = layers
-        self.hiddenSize = hiddenSize
         self.trainData = trainData
         self.testData = testData
+        self.embedding_size = embedding_size
 
     def Train(self, epochs):
-        print("Starting training...")
+        print("[INFO] Training started...")
         for epoch in range(epochs):
             self.model.train()
             total_loss = 0.0
@@ -21,11 +20,11 @@ class Trainer:
             
             for data, target in self.trainData:
                 data, target = data.to(self.device), target.to(self.device)
-                
+                # print("Data shape:", data.shape, "Target shape:", target.shape)
                 self.optimizer.zero_grad()
 
                 # Get output and hidden state from model
-                output, _ = self.model(data)
+                output = self.model(data)
                 output = output.squeeze()  # Ensure output matches target dimensions
                 
                 loss = self.criterion(output, target)
@@ -43,8 +42,9 @@ class Trainer:
             with torch.no_grad():
                 for data, target in self.testData:
                     data, target = data.to(self.device), target.to(self.device)
-                    
-                    output, _ = self.model(data)
+                    # print(data.shape, target.shape)
+
+                    output = self.model(data)
                     output = output.squeeze()  # Ensure output matches target dimensions
                     
                     val_loss = self.criterion(output, target)
@@ -55,6 +55,7 @@ class Trainer:
             avg_val_loss = total_val_loss / total_val_samples
             
             print(f'Epoch: {epoch+1}/{epochs}, Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}')
+        print("[INFO] Training complete.")
 
     def Evaluate(self):
         self.model.eval()
@@ -63,7 +64,7 @@ class Trainer:
             for data, target in self.testData:
                 data, target = data.to(self.device), target.to(self.device)
                 
-                output, _ = self.model(data)
+                output = self.model(data)
                 output = output.squeeze()  # Ensure output matches target dimensions
                 prediction = (torch.sigmoid(output) > 0.5).float()
 

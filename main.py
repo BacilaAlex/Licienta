@@ -5,6 +5,7 @@ from Trainer import Trainer
 import torch.nn as nn
 from TextProcessor import TextProcessor
 from LSTM import LSTM
+from xLSTM.xLSTMClassifier import xLSTMClassifier
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 
@@ -13,12 +14,10 @@ def main():
     textProcessor = TextProcessor()
 
     batchSize = 64
-    outputSize = 1
-    hiddenSize = 32
-    layers = 4
-    epochs = 250
-    learningRate = 0.009
-    embeddingSize = 500
+    epochs = 20
+    learningRate = 0.01
+    embeddingSize = 64
+    layers = ['s', 'm', 'm',]
     
     df = GetArticleData()
     x = df["text"].apply(lambda x: textCleaner.GetCleanedData(x))
@@ -39,15 +38,21 @@ def main():
     trainData = DataLoader(trainData, batch_size=batchSize, shuffle=True)
     testData = DataLoader(testData, batch_size=batchSize)
 
+    print("Train data shape:", len(trainData.dataset), "Test data shape:", len(testData.dataset))
+    print ("Train data shape:", len(trainData), "Test data shape:", len(testData))
+
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = LSTM(len(vocabulary), embeddingSize, hiddenSize, outputSize, layers).to(device)
+
+    # model = LSTM(len(vocabulary), embeddingSize, hiddenSize, outputSize, layers).to(device)
+    print("[INFO] Initializing model...")
+    model = xLSTMClassifier(layers,  batchSize, len(vocabulary),embeddingSize, depth=4, factor=2, dropout_head=0.1).to(device)
+    print("[INFO] Model initialized.")
     criterion = nn.BCEWithLogitsLoss()  # Changed to BCEWithLogitsLoss
     optimizer = torch.optim.Adam(model.parameters(), lr=learningRate)
 
-    trainer = Trainer(device, model, criterion, optimizer, layers, hiddenSize, trainData, testData)
+    trainer = Trainer(device, model, criterion, optimizer, trainData, testData, embeddingSize)
     trainer.Train(epochs)
     trainer.Evaluate()
-
     pass
 
 def GetArticleData():

@@ -1,15 +1,15 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from BlockDiagonal import BlockDiagonal
-from CausalConv1D import CausalConv1D
+from .BlockDiagonal import BlockDiagonal
+from .CausalConv1D import CausalConv1D
 
 ### mLSTMblock.py
 ### x_example: [batch_size, sequence_length, embedded_size]
 class mLSTMblock(nn.Module):
-    def __init__(self, batchSequenceEmbedded, factor, depth, dropout=0.2):
+    def __init__(self, batchPaddingInputSize, factor, depth, dropout=0.2):
         super().__init__()
-        self.input_size = batchSequenceEmbedded.shape[2]
+        self.input_size = batchPaddingInputSize.shape[2]
         self.hidden_size = int(self.input_size*factor)
         
         self.ln = nn.LayerNorm(self.input_size)
@@ -48,7 +48,7 @@ class mLSTMblock(nn.Module):
         self.proj = nn.Linear(self.hidden_size, self.input_size)
         self.ln_proj = nn.LayerNorm(self.input_size)
         
-        self.init_states(batchSequenceEmbedded)
+        self.init_states(batchPaddingInputSize)
     
     def init_states(self, x_example):
         self.ct_1 = torch.zeros([1, 1, self.hidden_size], device=x_example.device)
