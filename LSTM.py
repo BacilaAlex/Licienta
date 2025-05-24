@@ -2,22 +2,25 @@ import torch
 import torch.nn as nn
 
 class LSTM(nn.Module):
-    def __init__(self, vocab_size, embedding_dim, hidden_dim, num_classes, num_layers=1, dropout=0.5):
+    def __init__(self, vocab_size, embedding_dim, hidden_dim, num_layers=1, dropout=0.5):
         super(LSTM, self).__init__()
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
-        self.lstm = nn.LSTM(input_size=embedding_dim, hidden_size=hidden_dim, num_layers=num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_dim, num_classes)
+        self.lstm = nn.LSTM(input_size=embedding_dim, hidden_size=hidden_dim, num_layers=num_layers,dropout=dropout, batch_first=True)
+        self.fc = nn.Linear(hidden_dim, 1)
     
-    def forward(self, x, hidden=None):
-        embedded = self.embedding(x)
+    def forward(self, text):
+        # text shape: [batch_size, seq_length]
+        embedded = self.embedding(text)  # shape: [batch_size, seq_length, embedding_dim]
         
-        if hidden is None:
-            batch_size = x.size(0)
-            hidden = (torch.zeros(self.lstm.num_layers, batch_size, self.lstm.hidden_size).to(x.device), torch.zeros(self.lstm.num_layers, batch_size, self.lstm.hidden_size).to(x.device))
+        _ , (hidden, cell) = self.lstm(embedded)
+        # hidden shape: [num_layers, batch_size, hidden_dim]
         
-        lstm_out, hidden = self.lstm(embedded, hidden)
+        # Average hidden states from all layers
+        # First, transpose to get [batch_size, num_layers, hidden_dim]
+        hidden = hidden.transpose(0, 1)
+        # Calculate mean across layers dimension (dim=1)
+        hidden = torch.mean(hidden, dim=1)  # shape: [batch_size, hidden_dim]
         
-        last_hidden = lstm_out[:, -1, :]
-        logits = self.fc(last_hidden)
-        
-        return logits, hidden
+        # Pass through linear layer
+        output = self.fc(hidden)  # shape: [batch_size, num_classes]
+        return output

@@ -12,12 +12,12 @@ def main():
     textCleaner = TextCleaner()
     textProcessor = TextProcessor()
 
-    epochs = 300
+    epochs = 150
     batchSize = 128
     embeddingSize = 325
     hiddenSize = 128
     layers = 6
-    outputSize = 1
+    dropout = 7e-1
     learningRate = 1e-3
     
     df = GetArticleData()
@@ -26,7 +26,7 @@ def main():
 
     vocabulary = textProcessor.GenerateVocabulary(x)
 
-    xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2, random_state=42)
+    xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.3, random_state=42)
 
     xTrain  = textProcessor.GeneratePaddings(xTrain ,vocabulary)
     xTest = textProcessor.GeneratePaddings(xTest, vocabulary)
@@ -40,11 +40,11 @@ def main():
     testData = DataLoader(testData, batch_size=batchSize)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model = LSTM(len(vocabulary), embeddingSize, hiddenSize, outputSize, layers).to(device)
-    criterion = nn.BCEWithLogitsLoss()  # Changed to BCEWithLogitsLoss
+    model = LSTM(len(vocabulary), embeddingSize, hiddenSize, layers, dropout).to(device)
+    criterion = nn.BCEWithLogitsLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learningRate)
 
-    trainer = Trainer(device, model, criterion, optimizer, layers, hiddenSize, trainData, testData)
+    trainer = Trainer(device, model, criterion, optimizer, trainData, testData)
     trainer.Train(epochs)
     trainer.Evaluate()
 
