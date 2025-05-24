@@ -12,13 +12,13 @@ def main():
     textCleaner = TextCleaner()
     textProcessor = TextProcessor()
 
-    batchSize = 64
+    epochs = 300
+    batchSize = 128
+    embeddingSize = 325
+    hiddenSize = 128
+    layers = 6
     outputSize = 1
-    hiddenSize = 32
-    layers = 4
-    epochs = 250
-    learningRate = 0.009
-    embeddingSize = 500
+    learningRate = 1e-3
     
     df = GetArticleData()
     x = df["text"].apply(lambda x: textCleaner.GetCleanedData(x))
