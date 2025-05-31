@@ -1,0 +1,23 @@
+{
+    "Training": {
+        "Epochs": 130,
+        "BatchSize": 16
+    },
+    "Model": {
+        "EmbeddingSize": 250,
+        "HiddenSize": 128,
+        "Layers": 2,
+        "Dropout": 0.5
+    },
+    "Optimizer": {
+        "LearningRate": 5e-4,
+        "WeightDecay": 1e-6
+    },
+    "Scheduler": {
+        "Mode": "max",
+        "Factor": 0.1,
+        "Patience": 10,
+        "MinimumLearningRate": 0,
+        "MetricMonitor": "accuracy"
+    }
+}

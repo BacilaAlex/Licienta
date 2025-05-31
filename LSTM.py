@@ -9,18 +9,9 @@ class LSTM(nn.Module):
         self.fc = nn.Linear(hidden_dim, 1)
     
     def forward(self, text):
-        # text shape: [batch_size, seq_length]
-        embedded = self.embedding(text)  # shape: [batch_size, seq_length, embedding_dim]
-        
+        embedded = self.embedding(text)
         _ , (hidden, cell) = self.lstm(embedded)
-        # hidden shape: [num_layers, batch_size, hidden_dim]
-        
-        # Average hidden states from all layers
-        # First, transpose to get [batch_size, num_layers, hidden_dim]
         hidden = hidden.transpose(0, 1)
-        # Calculate mean across layers dimension (dim=1)
-        hidden = torch.mean(hidden, dim=1)  # shape: [batch_size, hidden_dim]
-        
-        # Pass through linear layer
-        output = self.fc(hidden)  # shape: [batch_size, num_classes]
+        hidden = torch.mean(hidden, dim=1)
+        output = self.fc(hidden)
         return output

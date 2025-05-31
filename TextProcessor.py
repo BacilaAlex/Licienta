@@ -14,8 +14,6 @@ class TextProcessor:
     def GenerateVocabulary(self, textData):
         vocabulary = build_vocab_from_iterator(self.TokenIterator(textData), min_freq = 2,specials=["<pad>","<unk>"])
         vocabulary.set_default_index(vocabulary["<unk>"])
-        print("Vocabulary size:", len(vocabulary))
-        #print("Vocabulary:", vocabulary.get_itos())
         return vocabulary
 
     def TextToTensor(self, text, vocabulary):
@@ -25,6 +23,4 @@ class TextProcessor:
     def GeneratePaddings(self, textData, vocabulary):
         tokenizedTextData = [self.TextToTensor(text, vocabulary) for text in textData]
         textPadded = pad_sequence(tokenizedTextData, batch_first=True)
-        print("Padded text shape:", textPadded.shape)
-        #print("Padded text:", textPadded)
         return textPadded
