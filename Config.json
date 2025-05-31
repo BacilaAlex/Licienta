@@ -1,6 +1,6 @@
 {
     "Training": {
-        "Epochs": 130,
+        "Epochs": 200,
         "BatchSize": 16
     },
     "Model": {
@@ -10,14 +10,14 @@
         "Dropout": 0.5
     },
     "Optimizer": {
-        "LearningRate": 5e-4,
-        "WeightDecay": 1e-6
+        "LearningRate": 1e-2,
+        "WeightDecay": 1e-7
     },
     "Scheduler": {
         "Mode": "max",
         "Factor": 0.1,
         "Patience": 10,
-        "MinimumLearningRate": 0,
+        "MinimumLearningRate": 5e-4,
         "MetricMonitor": "accuracy"
     }
 }

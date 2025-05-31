@@ -54,10 +54,10 @@ def main():
     model = LSTM(len(vocabulary), embeddingSize, hiddenSize, layers, dropout).to(device)
     criterion = nn.BCEWithLogitsLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learningRate, weight_decay=weightDecay)
-    # scheduler = ReduceLROnPlateau(optimizer, mode=mode, factor=factor, patience=patience, min_lr= minimumLearningRate)
+    scheduler = ReduceLROnPlateau(optimizer, mode=mode, factor=factor, patience=patience, min_lr= minimumLearningRate)
 
-    # trainer = Trainer(device, model, criterion, optimizer,scheduler, metricMonitor, trainData, testData)
-    trainer = Trainer(device, model, criterion, optimizer, trainData, testData)
+    trainer = Trainer(device, model, criterion, optimizer,scheduler, metricMonitor, trainData, testData)
+    # trainer = Trainer(device, model, criterion, optimizer, trainData, testData)
     trainer.Train(epochs)
     trainer.Evaluate()
 

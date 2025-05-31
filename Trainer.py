@@ -4,14 +4,14 @@ from PlotGenerator import PlotGenerator
 from ModelSaver import ModelSaver
 
 class Trainer:
-    # def __init__(self, device, model, criterion, optimizer, scheduler, metricMonitor,trainData, testData):
-    def __init__(self, device, model, criterion, optimizer, trainData, testData):
+    def __init__(self, device, model, criterion, optimizer, scheduler, metricMonitor,trainData, testData):
+    # def __init__(self, device, model, criterion, optimizer, trainData, testData):
         self.device = device
         self.model = model.to(self.device)
         self.criterion = criterion
         self.optimizer = optimizer
-        # self.scheduler = scheduler
-        # self.metricMonitor = metricMonitor
+        self.scheduler = scheduler
+        self.metricMonitor = metricMonitor
         self.trainData = trainData
         self.testData = testData
         self.trainLosses = []
@@ -52,8 +52,8 @@ class Trainer:
                 epoch=epoch
             )
 
-            # self.scheduler.step(validationMetrics.get(self.metricMonitor))
-            # print(f"Learning rate adjusted to: {self.scheduler.get_last_lr()[0]:.6f}")
+            self.scheduler.step(validationMetrics.get(self.metricMonitor))
+            print(f"Learning rate adjusted to: {self.scheduler.get_last_lr()[0]:.6f}")
         
         print("\nTraining completed!")
 
