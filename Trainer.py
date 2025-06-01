@@ -5,7 +5,6 @@ from ModelSaver import ModelSaver
 
 class Trainer:
     def __init__(self, device, model, criterion, optimizer, scheduler, metricMonitor,trainData, testData):
-    # def __init__(self, device, model, criterion, optimizer, trainData, testData):
         self.device = device
         self.model = model.to(self.device)
         self.criterion = criterion
@@ -19,7 +18,7 @@ class Trainer:
         self.trainAccuracies = []
         self.validationAccuracies = []
         self.evaluator = PlotGenerator(device, model, testData)
-        self.modelSaver = ModelSaver(model)
+        self.modelSaver = ModelSaver(model, optimizer, scheduler)
 
     def Train(self, epochs):
         print("Starting training...")
@@ -48,8 +47,12 @@ class Trainer:
             }
 
             self.modelSaver.SaveModel(
+                epoch=epoch,
                 metrics=metrics,
-                epoch=epoch
+                trainingLosses=self.trainLosses,
+                validationLosses=self.validationLosses,
+                trainingAccuracies=self.trainAccuracies,
+                validationAccuracies=self.validationAccuracies
             )
 
             self.scheduler.step(validationMetrics.get(self.metricMonitor))
@@ -150,13 +153,14 @@ class Trainer:
         )
 
         metrics = self.modelSaver.metrics
+        epoch = self.modelSaver.bestEpoch
 
         print("\n" + "-"*70)
         print("Best Model Summary")
         print("-"*70)
-        print(f"Epoch:        {self.modelSaver.bestEpoch}")
-        print(f"F1 Score:     {metrics.get('f1', 'N/A'):.4f}")
+        print(f"Epoch:        {epoch}")
         print(f"Accuracy:     {metrics.get('accuracy', 'N/A'):.4f}")
+        print(f"F1 Score:     {metrics.get('f1', 'N/A'):.4f}")
         print(f"Recall:       {metrics.get('recall', 'N/A'):.4f}")
         print(f"Precision:    {metrics.get('precision', 'N/A'):.4f}")
         print(f"Validation Loss:   {metrics.get('val_loss', 'N/A'):.4f}")

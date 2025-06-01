@@ -118,8 +118,6 @@ class PlotGenerator:
         
         plt.axhline(y=0.5, color='red', linestyle='--', alpha=0.7, 
                 label='Random Baseline (0.5)', linewidth=2)
-        plt.axhline(y=0.8, color='green', linestyle='--', alpha=0.7, 
-                label='Good Performance (0.8)', linewidth=2)
         plt.legend(loc='upper right')
         
         plt.tight_layout()

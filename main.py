@@ -35,7 +35,7 @@ def main():
 
     xTrain, xTest, yTrain, yTest = train_test_split(x, y, test_size=0.2, random_state=42)
 
-    vocabulary = textProcessor.GenerateVocabulary(x)
+    vocabulary = textProcessor.GenerateVocabulary(xTrain)
 
     xTrain  = textProcessor.GeneratePaddings(xTrain ,vocabulary)
     xTest = textProcessor.GeneratePaddings(xTest, vocabulary)
@@ -57,7 +57,6 @@ def main():
     scheduler = ReduceLROnPlateau(optimizer, mode=mode, factor=factor, patience=patience, min_lr= minimumLearningRate)
 
     trainer = Trainer(device, model, criterion, optimizer,scheduler, metricMonitor, trainData, testData)
-    # trainer = Trainer(device, model, criterion, optimizer, trainData, testData)
     trainer.Train(epochs)
     trainer.Evaluate()
 
