@@ -17,7 +17,7 @@ class Trainer:
         self.validationLosses = []
         self.trainAccuracies = []
         self.validationAccuracies = []
-        self.evaluator = PlotGenerator(device, model, testData)
+        self.plotGenerator = PlotGenerator(device, model, testData)
         self.modelSaver = ModelSaver(model, optimizer, scheduler)
 
     def Train(self, epochs):
@@ -145,7 +145,7 @@ class Trainer:
         self.model.to(self.device)
         self.model.eval() 
 
-        self.evaluator.Generate(
+        self.plotGenerator.Generate(
             self.trainLosses, 
             self.validationLosses, 
             self.trainAccuracies,            

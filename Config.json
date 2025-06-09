@@ -1,6 +1,6 @@
 {
     "Training": {
-        "Epochs": 100,
+        "Epochs": 120,
         "BatchSize": 16
     },
     "Model": {
@@ -16,7 +16,7 @@
     "Scheduler": {
         "Mode": "max",
         "Factor": 0.1,
-        "Patience": 5,
+        "Patience": 20,
         "MinimumLearningRate": 5e-5,
         "MetricMonitor": "accuracy"
     }

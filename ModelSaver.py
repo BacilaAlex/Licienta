@@ -9,12 +9,20 @@ class ModelSaver:
         self.metrics = None
         self.bestEpoch = None
         self.modelPath = "Model/BestModel.pth"
+        self.bestHarmonicMean = -1.0
         os.makedirs("Model", exist_ok=True)
     
     def SaveModel(self, epoch, metrics, trainingLosses, validationLosses, trainingAccuracies, validationAccuracies):
-        accuracy = metrics.get('accuracy', 0)
+        f1Score = metrics.get('f1', 0.0)
+        accuracy = metrics.get('accuracy', 0.0)
         
-        if self.metrics is None or accuracy > self.metrics.get('accuracy', 0):
+        if (accuracy + f1Score) == 0:
+            harmonicMean = 0.0
+        else:
+            harmonicMean = 2 * (accuracy * f1Score) / (accuracy + f1Score)
+
+        if harmonicMean > self.bestHarmonicMean:
+            self.bestHarmonicMean = harmonicMean
             self.metrics = metrics.copy()
             self.bestEpoch = epoch
             
