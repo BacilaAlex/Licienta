@@ -42,9 +42,6 @@ class ModelSaver:
     
     
     def LoadModel(self, device):
-        if not os.path.exists(self.modelPath):
-            print(f"Warning: Model file not found at {self.modelPath}. Cannot load best model.")
-        
         checkpoint = torch.load(self.modelPath, map_location=device)
         
         self.model.load_state_dict(checkpoint['ModelState'])

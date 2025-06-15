@@ -56,7 +56,6 @@ class Trainer:
             )
 
             self.scheduler.step(validationMetrics.get(self.metricMonitor))
-            print(f"Learning rate adjusted to: {self.scheduler.get_last_lr()[0]:.6f}")
         
         print("\nTraining completed!")
 
